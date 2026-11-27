@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en" data-site-page="article" data-content-language="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F5F8FC">
+  <meta name="description" content="I asked Muse to check a price on Amazon and hit an access restriction. What can Amazon tell about a request, and how do Walmart and Target handle shopping agents?">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Black Friday with an AI shopping agent: Why did Amazon block my price check?">
+  <meta property="og:description" content="I asked Muse to check a price on Amazon and hit an access restriction. What can Amazon tell about a request, and how do Walmart and Target handle shopping agents?">
+  <meta property="og:image" content="https://suereey.github.io/guides/amazon-ai-shopping-agents/cover.jpg">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:url" content="https://suereey.github.io/guides/amazon-ai-shopping-agents/en/">
+  <link rel="canonical" href="https://suereey.github.io/guides/amazon-ai-shopping-agents/en/">
+  <link rel="alternate" hreflang="en" href="https://suereey.github.io/guides/amazon-ai-shopping-agents/en/">
+  <link rel="alternate" hreflang="zh-Hans" href="https://suereey.github.io/guides/amazon-ai-shopping-agents/">
+  <link rel="alternate" hreflang="x-default" href="https://suereey.github.io/guides/amazon-ai-shopping-agents/">
+  <title>Black Friday with an AI shopping agent: Why did Amazon block my price check? — Lily</title>
+  <script src="/assets/site.js"></script>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/style.css">
+  <style>
+    .shopping img { max-width: 100%; height: auto; display: block; margin-inline: auto; }
+    .shopping figure { margin: 1.5rem 0; }
+    .shopping pre { overflow-x: auto; padding: 1em; background: var(--bg, #f5f8fc); border: 1px solid #d7e2ef; border-radius: .6em; }
+    .shop-table { overflow-x: auto; }
+    .shop-table table { width: 100%; border-collapse: collapse; }
+    .shop-table th, .shop-table td { padding: .6em; text-align: left; border-bottom: 1px solid #d7e2ef; }
+    .shop-table thead { background: #edf3f9; }
+  </style>
+</head>
+<body>
+<header class="site-header" data-ui-region lang="en">
+  <div class="container header-inner">
+    <a href="/" data-home-link="" class="wordmark" aria-label="Lily">Lily<span class="dot">.</span></a>
+    <nav class="nav" aria-label="Main navigation" data-main-nav>
+      <a href="/#articles" data-home-link="#articles" data-ui-en="Articles" data-ui-zh="文章">Articles</a>
+      <a href="/#topics" data-home-link="#topics" data-ui-en="Explore" data-ui-zh="探索">Explore</a>
+      <a href="/#about" data-home-link="#about" data-ui-en="About Lily ↗" data-ui-zh="关于 Lily ↗" class="nav-feature">About Lily ↗</a>
+    </nav>
+    <nav class="language-switch" aria-label="Website language / 网站语言" data-language-switch>
+      <a href="/" lang="en" hreflang="en" data-ui-choice="en" aria-label="English website" aria-current="true">EN</a>
+      <a href="/zh/" lang="zh-CN" hreflang="zh-Hans" data-ui-choice="zh" aria-label="中文网站">中文</a>
+    </nav>
+  </div>
+</header>
+<main class="article"><div class="container article-layout">
+<a href="/#articles" class="back" data-ui-region lang="en" data-home-link="#articles" data-ui-en="← Back to articles" data-ui-zh="← 返回文章列表">← Back to articles</a>
+<aside class="translation-panel" aria-label="Translation information"><div class="translation-top"><div class="translation-status"><span class="translation-icon" aria-hidden="true">↔</span><strong>AI-assisted translation · English</strong></div><a class="translation-link" href="/guides/amazon-ai-shopping-agents/" hreflang="zh-Hans" lang="en">View original (Chinese) <span aria-hidden="true">↗</span></a></div><p>Originally written in Chinese and translated into English with AI assistance. Some wording may differ from the original; please refer to the original article if anything is unclear.</p></aside>
+<header class="article-head"><span class="tag">Tech notes · AI shopping</span><h1>Black Friday with an AI shopping agent: Why did Amazon block my price check?</h1><div class="meta"><span>By Lily</span><time datetime="2026-11-24">November 24, 2026</time><span>Updated November 25 · English translation</span></div></header>
+<article class="article-body shopping" lang="en">
+<img src="../cover.jpg" alt="A robot in a shopping cart stops at a barrier" width="1500" height="600">
+<p>This Black Friday, I’ve been asking Muse to compare prices and tell me which deals are worth it. Sometimes I have it add something to my cart. I still check out myself. Muse got me prices at Walmart and Target. When I asked it to open an Amazon product page, all I got was “Access restricted.”</p>
+<figure><img src="../amazon.webp" alt="Amazon’s access restriction when Muse opened the product page" width="720" loading="lazy"></figure>
+<p>The message on Amazon’s page called it an “unauthorized AI agent.”</p>
+<p>On other sites I sometimes run into that little “I’m not a robot” box. A checkbox seems like an awfully easy assignment for an agent. Give me one of those traffic-light grids, though, and I’ll hesitate over the tiny sliver in the corner. I bet my agent would pick the right square before I would!</p>
+<h2>If Muse and I open the same product page, how can Amazon tell who clicked?</h2>
+<p>I asked Codex to visit Amazon’s homepage. Here’s an excerpt from that request.</p>
+<pre><code>GET / HTTP/1.1
+Host: www.amazon.com
+User-Agent: curl/8.14.1 Agent/Codex</code></pre>
+<p><code>User-Agent</code> is a field the software making a request uses to describe itself. Amazon requires agents to include <code>Agent/name</code> in every HTTP or HTTPS request to its services, starting with the very first one. I asked curl to add <code>Agent/Codex</code> here. As for Muse, the message alone doesn’t tell me what triggered the block or even whether Amazon identified Muse specifically. <a href="https://digprjsurvey.amazon.com/csad/help/node/GLSBYFE9MGKKQXXM">Amazon’s Conditions of Use · Agents §3</a></p>
+<p>On September 20, Amazon confirmed to tech publication GeekWire that it had blocked requests from Muse to shop on customers’ behalf. Amazon said Muse hadn’t identified itself while browsing. <a href="https://www.geekwire.com/2026/amazon-blocks-metas-muse-ai-assistant-in-new-standoff-over-agentic-shopping/#:~:text=Agentic%20third-party%20applications%20such%20as%20Muse">GeekWire’s report and Amazon’s statement</a></p>
+<figure><img src="../wegener.webp" alt="Jonathan Wegener’s post as quoted by Business Insider" width="560" loading="lazy"></figure>
+<p>Jonathan Wegener shared a similar message. The screenshot above shows his post as it appeared in Business Insider. <a href="https://x.com/jwegener/status/2101900045528535095">Wegener’s post and photo on X</a> · <a href="https://www.businessinsider.com/amazon-blocks-meta-muse-ai-agent-shopping-site-2026-9">Business Insider’s report</a></p>
+<p>In mid-October, a Grok Bot user shared a screenshot of Amazon blocking an order. Elon Musk reposted it and suggested sending Grok elsewhere to find a better deal. Later, someone asked about building an X Shop. Musk replied, “Maybe we should start a competitor to Amazon 🤔”.</p>
+<p><a href="https://x.com/elonmusk/status/2110602585572860213">Musk on shopping elsewhere</a> · <a href="https://x.com/elonmusk/status/2110715556328579219">His reply about an Amazon competitor</a> · <a href="https://elonmuskarchive.org/posts/2110715556328579219">Archived post</a></p>
+<h2>Can Amazon recognize an agent that doesn’t give its name?</h2>
+<p>An agent can leave its name out. Amazon might still recognize it. When Amazon sued Perplexity in November 2025, the complaint described one example.</p>
+<p>Comet is Perplexity’s browser. Its built-in Comet Assistant can click through websites for you. Amazon alleged that even after it asked Perplexity to stop, the agent continued accessing customer accounts that required a login.</p>
+<figure><img src="../forbes.webp" alt="Forbes headline about Amazon and Perplexity" width="580" loading="lazy"></figure>
+<p>In November 2025, Forbes covered Amazon’s demand that Perplexity stop letting Comet’s agent shop on its customers’ behalf. <a href="https://www.forbes.com/sites/johnkoetsier/2025/11/05/amazon-vs-perplexity-welcome-to-the-battle-for-the-future-of-commerce/">Forbes coverage</a></p>
+<p>According to Amazon’s complaint, Comet’s agent sent the same <code>User-Agent</code> as ordinary Chrome. Amazon said its engineers analyzed network traffic and browser data and found a set of characteristics that distinguished Comet’s actions from a customer browsing in person. Amazon called this a “browser fingerprint” without specifying the individual signals.</p>
+<p>So who actually got blocked? Amazon said it sometimes blocked the customer’s account and had to unblock it when the person came back to shop. According to Amazon, if Comet had identified itself in the <code>User-Agent</code>, Amazon could have blocked just the agent’s requests.</p>
+<p>On August 4, 2026, the appeals court vacated the preliminary injunction and sent the case back for further proceedings.</p>
+<p><a href="https://www.perplexity.ai/help-center/en/articles/11172798-getting-started-with-comet">Perplexity’s guide to Comet</a> · <a href="https://assets.alm.com/68/35/bb7589a4401c9d7713a7ac27516c/amazoncom-services-llc-v-perplexity-ai-inc-candce-25-09514-0001-0.pdf">Amazon’s complaint, paragraphs 34, 38 and 62</a> · <a href="https://cdn.ca9.uscourts.gov/datastore/opinions/2026/08/04/26-1444.pdf">Appeals court decision</a></p>
+<h2>Will Amazon, Walmart and Target let an agent shop for me?</h2>
+<p>I use Muse and Grok Bot, so those are the two I looked at.</p>
+<div class="shop-table"><table><thead><tr><th scope="col">Store</th><th scope="col">Muse</th><th scope="col">Grok Bot</th></tr></thead><tbody><tr><th scope="row">Amazon</th><td>I was blocked</td><td>A user’s order was blocked</td></tr><tr><th scope="row">Walmart</th><td>Official integration</td><td>I got a price</td></tr><tr><th scope="row">Target</th><td>I got a price</td><td>I got a price</td></tr></tbody></table></div>
+<p>Target’s terms list its approved shopping agents: Target’s own AI Shopping Assistant, OAI, Google and Microsoft. Muse and Grok Bot both gave me Target prices, but neither appears on that list. A price alone doesn’t tell me where they got it or establish that Target has integrated either product.</p>
+<p><a href="https://corporate.walmart.com/news/2026/11/black-friday-deals-with-meta-muse">Walmart’s November 24 Muse announcement</a> · <a href="https://www.target.com/c/terms-conditions/-/N-4sr7l">Target’s terms on agentic commerce and delegated access</a> · <a href="https://x.com/niccruzpatane/status/2110571616384213156">Grok Bot user’s screenshot</a> · <a href="https://www.walmart.com/help/article/walmart-agentic-access-terms/d048fc229d7549738d7c05a4317e24d7">Walmart’s agent access terms</a></p>
+<h3>When does Walmart ask an agent to identify itself?</h3>
+<p>Walmart’s general terms say an agent must provide its product name, version and company information <strong>when Walmart asks</strong>. Amazon’s terms specify the <code>User-Agent</code> on <strong>every request</strong>.</p>
+<p>Walmart has integrated Muse, Meta’s personal AI agent. Say I ask Muse for a TV under $500. It can search through Walmart’s interface. The first time I ask it to add an item to my cart, I set up an Agent Profile in my Walmart account, where I can give it a spending limit. Within the rules I set, Walmart can let it check out automatically.</p>
+<p>Checkout has another safeguard. The payment token is tied to the merchant, cart, amount and session. My shopping rules can carry over, but each transaction needs a fresh token. Once used, it’s no good for another purchase.</p>
+<p><a href="https://www.walmart.com/help/article/walmart-agentic-access-terms/d048fc229d7549738d7c05a4317e24d7">Walmart’s identity requirements (§3), customer authorization (§4) and Gateway appendix</a></p>
+<h2>When I buy something, how do Muse and Grok Bot make money?</h2>
+<p>Someone shared this screenshot of a stroller, and I’ve seen a similar button myself. It made me curious: if I tap “Buy with Muse,” does the merchant pay Muse?</p>
+<figure><img src="../buy-with-muse.webp" alt="Buy with Muse button on a stroller listing" width="365" loading="lazy"></figure>
+<p>The “Buy with Muse” button.</p>
+<p>On its third-quarter earnings call, Meta said it wants most people to be able to use Muse for free. Users could subscribe for access to more advanced models or higher usage limits. Meta plans to charge for transactions Muse helps bring about and expects merchants to pay. Neither company disclosed in these materials whether Walmart paid on a particular order or how much.</p>
+<p><a href="https://s21.q4cdn.com/399680738/files/content_files/META-Q3-2026-Earnings-Call-Transcript.pdf#page=2">Meta’s Q3 2026 earnings call, page 2</a></p>
+<p>Under the new X Subscription plans, Premium and higher tiers include Grok Bot. SpaceX’s third-quarter filing mentions subscription revenue from Grok and X.</p>
+<p><a href="https://docs.x.ai/x-subscription/grok-bot">Grok Bot subscription tiers</a> · <a href="https://www.sec.gov/Archives/edgar/data/1181412/000162828026066880/spcx-20260930.htm#:~:text=an%20increase%20in%20Grok%20and%20X%20subscription%20revenue">SpaceX’s third-quarter filing</a></p>
+<p>Here’s what I’m curious about. Imagine two stores selling the same thing. One offers my agent a commission. The other is $10 cheaper. When I ask for the lowest price, which store will my agent put first?</p>
+<p>Shopping is showing up in AI conversations in China, too. On November 24, LanJing News tried a new Doubao Shopping feature available to some users. You tell Doubao what you want, it finds products, and you place the order on a page provided by Douyin’s e-commerce platform. I haven’t dug into the business model there yet. When someone buys through Doubao, does the merchant pay Doubao a commission?</p>
+<p><a href="https://api3.cls.cn/share/article/2542637?app=&amp;os=android&amp;sv=852">LanJing News tries Doubao Shopping</a></p>
+<h3>Where did my Black Friday money go?</h3>
+<p>The other day, to make a deal work, Muse went through every possible way to split up my order and figured out which was cheapest. I could’ve hugged it! It saved me time and money. Maybe the saving-money part is what Amazon isn’t so keen on.</p>
+<p>I think shopping with agents is going to catch on. This Black Friday, everything I bought came from Walmart and Target.</p>
+<p>Walmart talks about Every Day Low Prices. It let my agent do the math to see how much I could save. That lived up to the promise for me.</p>
+<p><a href="https://corporate.walmart.com/about/everyday-affordability/every-day-low-prices">Walmart on Every Day Low Prices</a></p>
+</article>
+<div class="article-bottom"><img src="/assets/lily-avatar-small.webp" alt="Lily’s avatar" width="51" height="51"><div><strong>Written by Lily</strong>Curious about new tools, trying things out, and sharing what I learn.</div></div>
+</div></main>
+<footer class="site-footer" data-ui-region lang="en"><div class="container footer-grid"><a href="/" data-home-link="" class="wordmark">Lily<span class="dot">.</span></a><span data-ui-en="Made with curiosity · © 2026 Lily" data-ui-zh="保持好奇 · © 2026 Lily">Made with curiosity · © 2026 Lily</span><a href="/#articles" data-home-link="#articles" data-ui-en="Back to articles ↑" data-ui-zh="返回文章列表 ↑">Back to articles ↑</a></div></footer>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN" data-site-page="article" data-content-language="zh">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F5F8FC">
+  <meta name="description" content="黑五让 Muse 帮我查价，到了 Amazon 却被拦了。我研究了 Amazon 怎么识别 agent，也看了 Walmart 和 Target 的做法。">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="黑五用 agent 购物—我让它去 Amazon 查个价，怎么就被拦了？">
+  <meta property="og:description" content="黑五让 Muse 帮我查价，到了 Amazon 却被拦了。我研究了 Amazon 怎么识别 agent，也看了 Walmart 和 Target 的做法。">
+  <meta property="og:image" content="https://suereey.github.io/guides/amazon-ai-shopping-agents/cover.jpg">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:url" content="https://suereey.github.io/guides/amazon-ai-shopping-agents/">
+  <link rel="canonical" href="https://suereey.github.io/guides/amazon-ai-shopping-agents/">
+  <link rel="alternate" hreflang="en" href="https://suereey.github.io/guides/amazon-ai-shopping-agents/en/">
+  <link rel="alternate" hreflang="zh-Hans" href="https://suereey.github.io/guides/amazon-ai-shopping-agents/">
+  <link rel="alternate" hreflang="x-default" href="https://suereey.github.io/guides/amazon-ai-shopping-agents/">
+  <title>黑五用 agent 购物—我让它去 Amazon 查个价，怎么就被拦了？ — Lily</title>
+  <script src="/assets/site.js"></script>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/style.css">
+  <style>
+    .shopping img { max-width: 100%; height: auto; display: block; margin-inline: auto; }
+    .shopping figure { margin: 1.5rem 0; }
+    .shopping pre { overflow-x: auto; padding: 1em; background: var(--bg, #f5f8fc); border: 1px solid #d7e2ef; border-radius: .6em; }
+    .shop-table { overflow-x: auto; }
+    .shop-table table { width: 100%; border-collapse: collapse; }
+    .shop-table th, .shop-table td { padding: .6em; text-align: left; border-bottom: 1px solid #d7e2ef; }
+    .shop-table thead { background: #edf3f9; }
+  </style>
+</head>
+<body>
+<header class="site-header" data-ui-region lang="en">
+  <div class="container header-inner">
+    <a href="/" data-home-link="" class="wordmark" aria-label="Lily">Lily<span class="dot">.</span></a>
+    <nav class="nav" aria-label="Main navigation" data-main-nav>
+      <a href="/#articles" data-home-link="#articles" data-ui-en="Articles" data-ui-zh="文章">Articles</a>
+      <a href="/#topics" data-home-link="#topics" data-ui-en="Explore" data-ui-zh="探索">Explore</a>
+      <a href="/#about" data-home-link="#about" data-ui-en="About Lily ↗" data-ui-zh="关于 Lily ↗" class="nav-feature">About Lily ↗</a>
+    </nav>
+    <nav class="language-switch" aria-label="Website language / 网站语言" data-language-switch>
+      <a href="/" lang="en" hreflang="en" data-ui-choice="en" aria-label="English website" aria-current="true">EN</a>
+      <a href="/zh/" lang="zh-CN" hreflang="zh-Hans" data-ui-choice="zh" aria-label="中文网站">中文</a>
+    </nav>
+  </div>
+</header>
+<main class="article"><div class="container article-layout">
+<a href="/#articles" class="back" data-ui-region lang="en" data-home-link="#articles" data-ui-en="← Back to articles" data-ui-zh="← 返回文章列表">← Back to articles</a>
+<aside class="translation-panel" aria-label="文章语言"><div class="translation-top"><div class="translation-status"><span class="translation-icon" aria-hidden="true">↔</span><strong>原文 · 简体中文</strong></div><a class="translation-link" href="/guides/amazon-ai-shopping-agents/en/" hreflang="en" lang="en">Read in English <span aria-hidden="true">↗</span></a></div><p>本文为中文原文，英文版由 AI 辅助翻译。</p></aside>
+<header class="article-head"><span class="tag">科技探索 · AI 购物</span><h1>黑五用 agent 购物—我让它去 Amazon 查个价，怎么就被拦了？</h1><div class="meta"><span>作者 Lily</span><time datetime="2026-11-24">2026 年 11 月 24 日</time><span>11 月 25 日补充实测 · 中文原文</span></div></header>
+<article class="article-body shopping" lang="zh-CN">
+<img src="cover.jpg" alt="购物车里的机器人在栏杆前停下" width="1500" height="600">
+<p>最近黑五，我经常用 Muse 帮我比价格，看看哪些折扣划算，偶尔让它加个购物车，最后自己付款。Muse 能查到 Walmart 和 Target 的商品价格，可一打开 Amazon 的商品页就被拦了—「Access restricted」。</p>
+<figure><img src="amazon.webp" alt="Muse 打开商品页时看到的 Amazon 访问限制" width="720" loading="lazy"></figure>
+<p>Amazon 的原图，弹窗直接写了「unauthorized AI agent」。</p>
+<p>平时用 agent 逛别的网站，我偶尔会看到「I’m not a robot」。每次我都想，让 agent 勾个框也太简单了吧。真碰上选红绿灯的九宫格，我有时候拿不准的地方，Agent 肯定选得比我还准！</p>
+<h2>我自己点开商品页，和 Muse 替我点开，Amazon 怎么知道是谁点的？</h2>
+<p>我让 Codex 访问了一次 Amazon 首页。下面是这次请求的节选。</p>
+<pre><code>GET / HTTP/1.1
+Host: www.amazon.com
+User-Agent: curl/8.14.1 Agent/Codex</code></pre>
+<p><code>User-Agent</code> 是发请求的软件用来介绍自己的字段。Amazon 要求，agent 从访问它家服务的第一条 HTTP/HTTPS 请求起，每一条都得在这里写上 <code>Agent/名字</code>。这次的 <code>Agent/Codex</code> 是我让 curl 加的。至于 Muse 那次，光看弹窗，我看不出是什么触发了拦截，也不知道 Amazon 有没有认出 Muse。<a href="https://digprjsurvey.amazon.com/csad/help/node/GLSBYFE9MGKKQXXM">Amazon 使用条款 · Agents §3</a></p>
+<p>9 月 20 日，Amazon 向科技媒体 GeekWire 确认，它已经拦截了 Muse 代客购物的请求。按 Amazon 的说法，Muse 浏览时没有表明身份。<a href="https://www.geekwire.com/2026/amazon-blocks-metas-muse-ai-assistant-in-new-standoff-over-agentic-shopping/#:~:text=Agentic%20third-party%20applications%20such%20as%20Muse">GeekWire 报道及发言人原话</a></p>
+<figure><img src="wegener.webp" alt="Business Insider 引用 Jonathan Wegener 的帖子" width="560" loading="lazy"></figure>
+<p>Jonathan Wegener 也晒过类似提示。上图是 Business Insider 引用这条帖子的截图。<a href="https://x.com/jwegener/status/2101900045528535095">去 X 看原帖和他拍的弹窗</a> · <a href="https://www.businessinsider.com/amazon-blocks-meta-muse-ai-agent-shopping-site-2026-9">Business Insider 报道</a></p>
+<p>10 月中旬，有网友晒出 Grok Bot 在 Amazon 下单被拦的截图。马斯克转发说，那就让 Grok 去别家买，还能找个更好的 deal。后来另一个网友问，要不要干脆做个 X Shop？他回了句「Maybe we should start a competitor to Amazon 🤔」。</p>
+<p><a href="https://x.com/elonmusk/status/2110602585572860213">叫 Grok 去别家买的原帖</a> · <a href="https://x.com/elonmusk/status/2110715556328579219">提议做 Amazon 竞争对手的原帖</a> · <a href="https://elonmuskarchive.org/posts/2110715556328579219">原帖存档</a></p>
+<h2>那 agent 不报名字，Amazon 还能认出来吗？</h2>
+<p>技术上，agent 可以不报名字，Amazon 也有可能认出它。2025 年 11 月，Amazon 起诉了 Perplexity。起诉书里就讲到了一个具体例子。</p>
+<p>Comet 是 Perplexity 的浏览器，里面的 Comet Assistant 能替用户点网页。Amazon 在起诉书里说，它已经要求 Perplexity 停手，对方却还让 agent 进入需要登录的顾客账户。</p>
+<figure><img src="forbes.webp" alt="Forbes 关于 Amazon 和 Perplexity 的报道标题" width="580" loading="lazy"></figure>
+<p>2025 年 11 月，Forbes 报道了 Amazon 要求 Perplexity 停止让 Comet 的 agent 替顾客在 Amazon 购物的事。<a href="https://www.forbes.com/sites/johnkoetsier/2025/11/05/amazon-vs-perplexity-welcome-to-the-battle-for-the-future-of-commerce/">Forbes 原文</a></p>
+<p>按 Amazon 在起诉书里的说法，Comet 的 agent 发来的 <code>User-Agent</code> 和普通 Chrome 一样。工程师分析了网络流量和浏览器数据，找出一组能把 Comet 的操作和顾客自己浏览区分开的特征。Amazon 把这组特征叫作「浏览器指纹」，但没说具体看了哪些信号。</p>
+<p>认出来之后，拦的是谁？Amazon 说，有时它把使用 Comet 的顾客账户也拦了，等顾客回来自己逛，还得给账户解封。按 Amazon 的说法，如果 Comet 在 <code>User-Agent</code> 里报了名字，它就可以只拦 agent 的请求。</p>
+<p>2026 年 8 月 4 日，上诉法院撤销了初步禁令，把案子发回继续审理。</p>
+<p><a href="https://www.perplexity.ai/help-center/en/articles/11172798-getting-started-with-comet">Perplexity 的 Comet 使用指南</a> · <a href="https://assets.alm.com/68/35/bb7589a4401c9d7713a7ac27516c/amazoncom-services-llc-v-perplexity-ai-inc-candce-25-09514-0001-0.pdf">Amazon 起诉书 · 第 34、38、62 段</a> · <a href="https://cdn.ca9.uscourts.gov/datastore/opinions/2026/08/04/26-1444.pdf">上诉法院裁定</a></p>
+<h2>Amazon、Walmart 和 Target 都让 agent 帮我购物吗？</h2>
+<p>我平时用 Muse 和 Grok Bot 帮我购物，这里就说说这两个。</p>
+<div class="shop-table"><table><thead><tr><th scope="col">店</th><th scope="col">Muse</th><th scope="col">Grok Bot</th></tr></thead><tbody><tr><th scope="row">Amazon</th><td>我遇到拦截</td><td>网友下单被拦</td></tr><tr><th scope="row">Walmart</th><td>正式接入</td><td>我查到过价格</td></tr><tr><th scope="row">Target</th><td>我查到过价格</td><td>我查到过价格</td></tr></tbody></table></div>
+<p>Target 在条款里列出了它批准的购物 agent（Target 自家的 AI Shopping Assistant、OAI、Google 和 Microsoft）。Muse 和 Grok Bot 都不在名单上，光看它们给我的价格，看不出价格从哪儿来，也不能据此推断 Target 正式接入了它们。</p>
+<p><a href="https://corporate.walmart.com/news/2026/11/black-friday-deals-with-meta-muse">Walmart 的 Muse 接入公告 · 11 月 24 日</a> · <a href="https://www.target.com/c/terms-conditions/-/N-4sr7l">Target 条款 · Agentic Commerce and Delegated Access</a> · <a href="https://x.com/niccruzpatane/status/2110571616384213156">Grok Bot 用户的下单截图</a> · <a href="https://www.walmart.com/help/article/walmart-agentic-access-terms/d048fc229d7549738d7c05a4317e24d7">Walmart 的 agent 访问条款</a></p>
+<h3>Walmart 也要 agent 报名字，什么时候报？</h3>
+<p>Walmart 的通用条款写的是，<strong>Walmart 要求时</strong>，agent 要提供产品名、版本和背后公司的信息。Amazon 的条款则写到了<strong>每一条请求的 <code>User-Agent</code></strong>。</p>
+<p>Walmart 正式接入了 Meta 的个人 AI 助手 Muse。比如我让 Muse 找一台 500 美元以内的电视，它可以通过 Walmart 的接口找商品。第一次让它加购物车时，我要在 Walmart 账户里设置 Agent Profile，可以给它设个支出上限。在我设的范围内，Walmart 可以让它自动结账。</p>
+<p>结账时还有一层限制。付款用的令牌绑定了商家、购物车、金额和本次会话。我设的购物规则可以接着用，但每笔交易都得拿一枚新令牌，用完就作废。</p>
+<p><a href="https://www.walmart.com/help/article/walmart-agentic-access-terms/d048fc229d7549738d7c05a4317e24d7">Walmart 的身份要求 §3、顾客授权 §4 和 Gateway 附录</a></p>
+<h2>我买了东西，Muse 和 Grok Bot 如何盈利？</h2>
+<p>别人分享过这张推车的商品图，我也见过类似的按钮。我很好奇，要是我点「Buy with Muse」下单，Muse 会收商家的钱吗？</p>
+<figure><img src="buy-with-muse.webp" alt="推车商品卡片上的 Buy with Muse 按钮" width="365" loading="lazy"></figure>
+<p>「Buy with Muse」购物入口原图。</p>
+<p>Meta 在三季度财报电话会上说，它希望大多数人能免费用 Muse，想用更高级的模型或更多用量，用户也可以订阅。至于购物，Meta 打算对 Muse 帮忙促成的交易收费，预计由商家来付。具体到 Walmart 这一单有没有付、付多少，两家都没在这些材料里披露。</p>
+<p><a href="https://s21.q4cdn.com/399680738/files/content_files/META-Q3-2026-Earnings-Call-Transcript.pdf#page=2">Meta 2026 年第三季度财报电话会 · 第 2 页</a></p>
+<p>按新的 The X Subscription，Premium 及以上档位包含 Grok Bot。SpaceX 的三季报提到了 Grok 和 X 的订阅收入。</p>
+<p><a href="https://docs.x.ai/x-subscription/grok-bot">Grok Bot 的订阅档位</a> · <a href="https://www.sec.gov/Archives/edgar/data/1181412/000162828026066880/spcx-20260930.htm#:~:text=an%20increase%20in%20Grok%20and%20X%20subscription%20revenue">SpaceX 三季度财报</a></p>
+<p>我很好奇，以后要是两家店卖同一款产品，一家愿意给 agent 佣金，另一家便宜 10 美元，我让它帮我找最便宜的，agent会把哪家排在前面？</p>
+<p>国内也开始把购物放进 AI 对话里了。11 月 24 日，蓝鲸新闻实测发现，部分用户的豆包里多了「豆包购物」入口。在对话里说想买什么，豆包帮你找商品，再去抖音电商提供的页面下单。 我还没细看国内的盈利模式，也很好奇，通过豆包买一单，商家会给豆包付佣金吗？</p>
+<p><a href="https://api3.cls.cn/share/article/2542637?app=&amp;os=android&amp;sv=852">蓝鲸新闻实测「豆包购物」</a></p>
+<h3>今年黑五，我的钱花在哪儿了？</h3>
+<p>前两天为了用上 deal，Muse 帮我穷举下单方式，算怎么最划算。我可太感动了！能少花钱，还能省时间。可能少花钱，是 Amazon 不太想看到的吧。</p>
+<p>我认为用 agent 买东西是未来大趋势。今年黑五，我的东西都在 Walmart 和 Target 买了。</p>
+<p>Walmart 一直讲 Every Day Low Prices。愿意让我的 agent 帮我算怎么更省钱，我觉得它做到了。</p>
+<p><a href="https://corporate.walmart.com/about/everyday-affordability/every-day-low-prices">Walmart 的 Every Day Low Prices</a></p>
+</article>
+<div class="article-bottom"><img src="/assets/lily-avatar-small.webp" alt="Lily 头像" width="51" height="51"><div><strong>作者 Lily</strong>对新工具保持好奇，亲自尝试，分享学到的东西。</div></div>
+</div></main>
+<footer class="site-footer" data-ui-region lang="en"><div class="container footer-grid"><a href="/" data-home-link="" class="wordmark">Lily<span class="dot">.</span></a><span data-ui-en="Made with curiosity · © 2026 Lily" data-ui-zh="保持好奇 · © 2026 Lily">Made with curiosity · © 2026 Lily</span><a href="/#articles" data-home-link="#articles" data-ui-en="Back to articles ↑" data-ui-zh="返回文章列表 ↑">Back to articles ↑</a></div></footer>
+</body>
+</html>
